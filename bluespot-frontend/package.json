@@ -1,0 +1,58 @@
+{
+  "name": "bluespot-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node -e \"const v=process.versions.node.split('.').map(Number); const ok=(v[0]===22&&v[1]>=18)||(v[0]===24&&v[1]>=12)||v[0]>24; if(!ok){console.error('❌ 错误: 需要Node.js版本^22.18.0或>=24.12.0，当前版本为'+process.versions.node); process.exit(1)} console.log('✓ Node.js版本'+process.versions.node+'符合要求')\"",
+    "preinstall": "npx only-allow pnpm && npm run check",
+    "predev": "npm run check",
+    "dev": "vite",
+    "start": "npm run dev",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build",
+    "lint": "run-s \"lint:*\"",
+    "lint:oxlint": "oxlint . --fix",
+    "lint:eslint": "eslint . --fix --cache",
+    "format": "oxfmt src/"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.2",
+    "dayjs": "^1.11.21",
+    "pinia": "^3.0.4",
+    "tailwindcss": "^4.3.2",
+    "tdesign-vue-next": "^1.20.3",
+    "vue": "^3.5.38",
+    "vue-router": "^5.1.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node24": "^24.0.4",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^24.13.2",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "@vitejs/plugin-vue-jsx": "^5.1.5",
+    "@vue/eslint-config-typescript": "^14.8.0",
+    "@vue/tsconfig": "^0.9.1",
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-oxlint": "~1.69.0",
+    "eslint-plugin-vue": "~10.9.2",
+    "fast-glob": "^3.3.3",
+    "fs-extra": "^11.3.5",
+    "jiti": "^2.7.0",
+    "npm-run-all2": "^9.0.2",
+    "oxfmt": "^0.54.0",
+    "oxlint": "~1.69.0",
+    "typescript": "~6.0.0",
+    "vite": "^8.0.16",
+    "vite-plugin-vue-devtools": "^8.1.2",
+    "vue-eslint-parser": "^10.4.1",
+    "vue-tsc": "^3.3.5"
+  },
+  "engines": {
+    "node": "^22.18.0 || >=24.12.0",
+    "npm": ">=10.0.0"
+  }
+}

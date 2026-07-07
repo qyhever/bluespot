@@ -1,0 +1,285 @@
+basePath: /api
+definitions:
+  controller.MyCode:
+    enum:
+    - 1000
+    - 1001
+    - 1002
+    - 1003
+    - 1004
+    - 1005
+    - 1006
+    - 1007
+    - 1008
+    - 1009
+    - 1010
+    format: int64
+    type: integer
+    x-enum-comments:
+      CodeInvalidParam: 请求参数错误
+      CodeInvalidPassword: 用户名或密码错误
+      CodeInvalidToken: 无效的token
+      CodeNeedLogin: 需要登录
+      CodePermissionDenied: 权限不足
+      CodeResourceExists: 资源已存在
+      CodeResourceNotExist: 资源不存在
+      CodeServerBusy: 服务繁忙
+      CodeSuccess: 成功
+      CodeUserExist: 用户已存在
+      CodeUserNotExist: 用户不存在
+    x-enum-descriptions:
+    - 成功
+    - 请求参数错误
+    - 用户已存在
+    - 用户不存在
+    - 用户名或密码错误
+    - 服务繁忙
+    - 需要登录
+    - 无效的token
+    - 资源已存在
+    - 资源不存在
+    - 权限不足
+    x-enum-varnames:
+    - CodeSuccess
+    - CodeInvalidParam
+    - CodeUserExist
+    - CodeUserNotExist
+    - CodeInvalidPassword
+    - CodeServerBusy
+    - CodeNeedLogin
+    - CodeInvalidToken
+    - CodeResourceExists
+    - CodeResourceNotExist
+    - CodePermissionDenied
+  controller.ResponseData:
+    properties:
+      code:
+        $ref: '#/definitions/controller.MyCode'
+      data: {}
+      message:
+        type: string
+    type: object
+  controller.SwaggerAuthLoginResponse:
+    properties:
+      code:
+        example: 1000
+        type: integer
+      data:
+        $ref: '#/definitions/model.AuthLoginResponse'
+      message:
+        example: success
+        type: string
+    type: object
+  controller.SwaggerHelloInfoResponse:
+    properties:
+      code:
+        example: 1000
+        type: integer
+      data:
+        $ref: '#/definitions/model.GetHelloInfoResponse'
+      message:
+        example: success
+        type: string
+    type: object
+  controller.SwaggerUserInfoResponse:
+    properties:
+      code:
+        example: 1000
+        type: integer
+      data:
+        $ref: '#/definitions/model.UserInfoResponse'
+      message:
+        example: success
+        type: string
+    type: object
+  model.AuthLoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  model.AuthLoginResponse:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+    type: object
+  model.AuthRefreshTokenRequest:
+    properties:
+      refreshToken:
+        type: string
+    required:
+    - refreshToken
+    type: object
+  model.GetHelloInfoRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  model.GetHelloInfoResponse:
+    properties:
+      name:
+        type: string
+    type: object
+  model.UserInfoResponse:
+    properties:
+      nickname:
+        type: string
+      userId:
+        type: integer
+      username:
+        type: string
+    type: object
+host: localhost:6306
+info:
+  contact: {}
+  description: bluespot-backend HTTP API documentation.
+  title: bluespot-backend API
+  version: "1.0"
+paths:
+  /app/getHelloInfo:
+    post:
+      consumes:
+      - application/json
+      description: 根据传入 name 返回问候信息。
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.GetHelloInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SwaggerHelloInfoResponse'
+      summary: 获取问候信息
+      tags:
+      - app
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 使用管理员用户名和密码换取 accessToken 与 refreshToken。业务失败同样返回 HTTP 200，通过 code/message
+        区分。
+      parameters:
+      - description: 登录参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.AuthLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SwaggerAuthLoginResponse'
+      summary: 管理员登录
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: 使用 refreshToken 换取新的 accessToken 与 refreshToken。业务失败同样返回 HTTP 200，通过
+        code/message 区分。
+      parameters:
+      - description: 刷新参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.AuthRefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SwaggerAuthLoginResponse'
+      summary: 刷新管理员 Token
+      tags:
+      - auth
+  /meta:
+    get:
+      consumes:
+      - application/json
+      description: 返回 public/meta.json 中的动态 JSON 内容；文件缺失时返回 deployTime=unknown。
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 获取部署元信息
+      tags:
+      - meta
+  /user/info:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前登录管理员的基础信息，不返回密码。
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SwaggerUserInfoResponse'
+      security:
+      - BearerAuth: []
+      summary: 获取当前管理员信息
+      tags:
+      - user
+  /video:
+    get:
+      description: 读取视频索引缓存，按日期分组返回视频列表。
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.ResponseData'
+      summary: 获取视频列表
+      tags:
+      - video
+  /video/refresh:
+    post:
+      description: 扫描配置的视频目录，生成视频索引文件并更新内存缓存。
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.ResponseData'
+      summary: 刷新视频索引
+      tags:
+      - video
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
