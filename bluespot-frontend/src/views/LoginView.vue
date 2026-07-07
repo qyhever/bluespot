@@ -147,7 +147,7 @@ async function submit() {
       localStorage.removeItem("albumSession");
     }
     noticeType.value = "success";
-    notice.value = "验证通过，正在进入相册";
+    notice.value = "验证通过，正在进入";
     await router.push("/");
   } catch (error) {
     console.warn("Failed to login.", error);
