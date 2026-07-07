@@ -6,7 +6,7 @@ import { request as http } from './fetch'
 import type { RequestOptions } from './fetch'
 
 const defaultOptions = {
-  baseURL: '/sfr/api',
+  baseURL: '/bluespot/api',
 }
 const SUCCESS_CODE = 1000
 

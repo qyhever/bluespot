@@ -26,10 +26,10 @@ export default defineConfig(({ mode, command }) => {
       port: 5175,
       // host: '0.0.0.0',
       proxy: {
-        '/sfr/api': {
+        '/bluespot/api': {
           target: 'http://localhost:6306',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/sfr/, ''),
+          rewrite: (path) => path.replace(/^\/bluespot/, ''),
         },
       },
     },

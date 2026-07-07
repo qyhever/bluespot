@@ -1,62 +1,14 @@
 basePath: /api
 definitions:
-  controller.MyCode:
-    enum:
-    - 1000
-    - 1001
-    - 1002
-    - 1003
-    - 1004
-    - 1005
-    - 1006
-    - 1007
-    - 1008
-    - 1009
-    - 1010
-    format: int64
-    type: integer
-    x-enum-comments:
-      CodeInvalidParam: 请求参数错误
-      CodeInvalidPassword: 用户名或密码错误
-      CodeInvalidToken: 无效的token
-      CodeNeedLogin: 需要登录
-      CodePermissionDenied: 权限不足
-      CodeResourceExists: 资源已存在
-      CodeResourceNotExist: 资源不存在
-      CodeServerBusy: 服务繁忙
-      CodeSuccess: 成功
-      CodeUserExist: 用户已存在
-      CodeUserNotExist: 用户不存在
-    x-enum-descriptions:
-    - 成功
-    - 请求参数错误
-    - 用户已存在
-    - 用户不存在
-    - 用户名或密码错误
-    - 服务繁忙
-    - 需要登录
-    - 无效的token
-    - 资源已存在
-    - 资源不存在
-    - 权限不足
-    x-enum-varnames:
-    - CodeSuccess
-    - CodeInvalidParam
-    - CodeUserExist
-    - CodeUserNotExist
-    - CodeInvalidPassword
-    - CodeServerBusy
-    - CodeNeedLogin
-    - CodeInvalidToken
-    - CodeResourceExists
-    - CodeResourceNotExist
-    - CodePermissionDenied
-  controller.ResponseData:
+  controller.SwaggerAttachUploadResponse:
     properties:
       code:
-        $ref: '#/definitions/controller.MyCode'
-      data: {}
+        example: 1000
+        type: integer
+      data:
+        $ref: '#/definitions/model.AttachUploadResponse'
       message:
+        example: success
         type: string
     type: object
   controller.SwaggerAuthLoginResponse:
@@ -90,6 +42,15 @@ definitions:
         $ref: '#/definitions/model.UserInfoResponse'
       message:
         example: success
+        type: string
+    type: object
+  model.AttachUploadResponse:
+    properties:
+      fileName:
+        type: string
+      originName:
+        type: string
+      url:
         type: string
     type: object
   model.AuthLoginRequest:
@@ -166,6 +127,29 @@ paths:
       summary: 获取问候信息
       tags:
       - app
+  /attach/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 上传文件到本地存储，并返回公开访问地址。
+      parameters:
+      - description: 上传文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SwaggerAttachUploadResponse'
+      security:
+      - BearerAuth: []
+      summary: 上传附件
+      tags:
+      - attach
   /auth/login:
     post:
       consumes:
@@ -251,32 +235,6 @@ paths:
       summary: 获取当前管理员信息
       tags:
       - user
-  /video:
-    get:
-      description: 读取视频索引缓存，按日期分组返回视频列表。
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.ResponseData'
-      summary: 获取视频列表
-      tags:
-      - video
-  /video/refresh:
-    post:
-      description: 扫描配置的视频目录，生成视频索引文件并更新内存缓存。
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.ResponseData'
-      summary: 刷新视频索引
-      tags:
-      - video
 securityDefinitions:
   BearerAuth:
     in: header

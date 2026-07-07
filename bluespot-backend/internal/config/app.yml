@@ -40,3 +40,7 @@ postal:
   from_email: "" # 发件邮箱
   from_pass: ""  # 发件邮箱密码
   from_name: ""  # 发件人显示名称
+
+attach:
+  view_attach_base_url: "http://localhost:6306/public/uploads" # 上传文件访问地址前缀
+  upload_dir_path: "./public/uploads" # 上传文件存放目录

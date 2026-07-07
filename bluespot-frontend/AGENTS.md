@@ -52,15 +52,15 @@ pnpm format
 开发服务配置在 `vite.config.ts`：
 
 - 前端端口：`5175`
-- API 代理前缀：`/ggfftz/api`
+- API 代理前缀：`/bluespot/api`
 - 代理目标：`http://localhost:6300`
-- 代理 rewrite：`/ggfftz/api/...` 会转发为后端 `/api/...`
+- 代理 rewrite：`/bluespot/api/...` 会转发为后端 `/api/...`
 
 业务请求默认 `baseURL` 在 `src/utils/request.ts` 中配置为：
 
 ```ts
 const defaultOptions = {
-  baseURL: '/ggfftz/api',
+  baseURL: '/bluespot/api',
 }
 ```
 

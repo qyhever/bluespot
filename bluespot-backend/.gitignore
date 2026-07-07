@@ -57,3 +57,4 @@ internal/config/prod.yml
 
 commit.sh
 scripts/command.md
+public/uploads

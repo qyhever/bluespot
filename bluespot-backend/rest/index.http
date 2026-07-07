@@ -30,6 +30,18 @@ get http://{{host}}/api/user/info HTTP/1.1
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
+### AttachUpload
+post http://{{host}}/api/attach/upload HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----BluespotBoundary
+
+------BluespotBoundary
+Content-Disposition: form-data; name="file"; filename="example.txt"
+Content-Type: text/plain
+
+hello bluespot
+------BluespotBoundary--
+
 ### RefreshVideos
 post http://{{host}}/api/video/refresh HTTP/1.1
 Content-Type: application/json

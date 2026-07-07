@@ -12,15 +12,16 @@ import (
 
 // Config 应用配置结构体
 type Config struct {
-	Mode         string         `mapstructure:"mode"`
-	VideoBaseURL string         `mapstructure:"video_base_url"`
-	VideoDirPath string         `mapstructure:"video_dir_path"`
-	Server       ServerConfig   `mapstructure:"server"`
-	Logger       LoggerConfig   `mapstructure:"logger"`
-	Database     DatabaseConfig `mapstructure:"database"`
-	JWT          JWTConfig      `mapstructure:"jwt"`
-	Auth         AuthConfig     `mapstructure:"auth"`
-	Postal       PostalConfig   `mapstructure:"postal"`
+	Mode              string         `mapstructure:"mode"`
+	ViewAttachBaseURL string         `mapstructure:"view_attach_base_url"`
+	UploadDirPath     string         `mapstructure:"upload_dir_path"`
+	Server            ServerConfig   `mapstructure:"server"`
+	Logger            LoggerConfig   `mapstructure:"logger"`
+	Database          DatabaseConfig `mapstructure:"database"`
+	JWT               JWTConfig      `mapstructure:"jwt"`
+	Auth              AuthConfig     `mapstructure:"auth"`
+	Postal            PostalConfig   `mapstructure:"postal"`
+	Attach            AttachConfig   `mapstructure:"attach"`
 }
 
 // ServerConfig 服务器配置
@@ -71,6 +72,11 @@ type PostalConfig struct {
 	FromEmail  string `mapstructure:"from_email"`
 	FromPass   string `mapstructure:"from_pass"`
 	FromName   string `mapstructure:"from_name"`
+}
+
+type AttachConfig struct {
+	ViewAttachBaseURL string `mapstructure:"view_attach_base_url"`
+	UploadDirPath     string `mapstructure:"upload_dir_path"`
 }
 
 type ThirdPartyConfig struct {
@@ -157,8 +163,10 @@ func bindEnvVars(loader *viper.Viper) {
 	loader.AutomaticEnv()
 
 	loader.BindEnv("mode", "BLUESPOT_MODE")
-	loader.BindEnv("video_base_url", "BLUESPOT_VIDEO_BASE_URL")
-	loader.BindEnv("video_dir_path", "BLUESPOT_VIDEO_DIR_PATH")
+	loader.BindEnv("view_attach_base_url", "BLUESPOT_VIEW_ATTACH_BASE_URL")
+	loader.BindEnv("upload_dir_path", "BLUESPOT_UPLOAD_DIR_PATH")
+	loader.BindEnv("attach.view_attach_base_url", "BLUESPOT_ATTACH_VIEW_ATTACH_BASE_URL")
+	loader.BindEnv("attach.upload_dir_path", "BLUESPOT_ATTACH_UPLOAD_DIR_PATH")
 
 	loader.BindEnv("server.port", "BLUESPOT_SERVER_PORT")
 
@@ -213,20 +221,26 @@ func GetConfig() *Config {
 	return GlobalConfig
 }
 
-// GetVideoDirPath 获取视频目录路径
-func GetVideoDirPath() string {
+// GetAttachUploadDirPath 获取上传文件存放目录。
+func GetAttachUploadDirPath() string {
 	if GlobalConfig == nil {
 		return ""
 	}
-	return GlobalConfig.VideoDirPath
+	if strings.TrimSpace(GlobalConfig.Attach.UploadDirPath) != "" {
+		return GlobalConfig.Attach.UploadDirPath
+	}
+	return GlobalConfig.UploadDirPath
 }
 
-// GetVideoBaseURL 获取视频访问基础 URL
-func GetVideoBaseURL() string {
+// GetAttachViewBaseURL 获取上传文件访问地址前缀。
+func GetAttachViewBaseURL() string {
 	if GlobalConfig == nil {
 		return ""
 	}
-	return GlobalConfig.VideoBaseURL
+	if strings.TrimSpace(GlobalConfig.Attach.ViewAttachBaseURL) != "" {
+		return GlobalConfig.Attach.ViewAttachBaseURL
+	}
+	return GlobalConfig.ViewAttachBaseURL
 }
 
 // GetServerAddr 获取服务器地址

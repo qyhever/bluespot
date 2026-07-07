@@ -46,6 +46,9 @@ func SetupRouter() *gin.Engine {
 	userRepo := persistence.NewUserRepository()
 	userService := service.NewUserService(userRepo)
 	userController := controller.NewUserController(userService)
+	attachRepo := persistence.NewAttachRepository()
+	attachService := service.NewAttachService(attachRepo)
+	attachController := controller.NewAttachController(attachService)
 
 	v1 := r.Group("/api")
 
@@ -63,6 +66,10 @@ func SetupRouter() *gin.Engine {
 	userGroup := v1.Group("/user")
 	userGroup.Use(middleware.JWTAuthMiddleware())
 	userGroup.GET("/info", userController.GetCurrentUserInfo)
+
+	attachGroup := v1.Group("/attach")
+	attachGroup.Use(middleware.JWTAuthMiddleware())
+	attachGroup.POST("/upload", attachController.Upload)
 
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{

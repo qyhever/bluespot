@@ -49,6 +49,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/attach/upload": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "上传文件到本地存储，并返回公开访问地址。",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "attach"
+                ],
+                "summary": "上传附件",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "上传文件",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.SwaggerAttachUploadResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "使用管理员用户名和密码换取 accessToken 与 refreshToken。业务失败同样返回 HTTP 200，通过 code/message 区分。",
@@ -177,74 +214,22 @@ const docTemplate = `{
                     }
                 }
             }
-        },
+        }
     },
     "definitions": {
-        "controller.MyCode": {
-            "type": "integer",
-            "format": "int64",
-            "enum": [
-                1000,
-                1001,
-                1002,
-                1003,
-                1004,
-                1005,
-                1006,
-                1007,
-                1008,
-                1009,
-                1010
-            ],
-            "x-enum-comments": {
-                "CodeInvalidParam": "请求参数错误",
-                "CodeInvalidPassword": "用户名或密码错误",
-                "CodeInvalidToken": "无效的token",
-                "CodeNeedLogin": "需要登录",
-                "CodePermissionDenied": "权限不足",
-                "CodeResourceExists": "资源已存在",
-                "CodeResourceNotExist": "资源不存在",
-                "CodeServerBusy": "服务繁忙",
-                "CodeSuccess": "成功",
-                "CodeUserExist": "用户已存在",
-                "CodeUserNotExist": "用户不存在"
-            },
-            "x-enum-descriptions": [
-                "成功",
-                "请求参数错误",
-                "用户已存在",
-                "用户不存在",
-                "用户名或密码错误",
-                "服务繁忙",
-                "需要登录",
-                "无效的token",
-                "资源已存在",
-                "资源不存在",
-                "权限不足"
-            ],
-            "x-enum-varnames": [
-                "CodeSuccess",
-                "CodeInvalidParam",
-                "CodeUserExist",
-                "CodeUserNotExist",
-                "CodeInvalidPassword",
-                "CodeServerBusy",
-                "CodeNeedLogin",
-                "CodeInvalidToken",
-                "CodeResourceExists",
-                "CodeResourceNotExist",
-                "CodePermissionDenied"
-            ]
-        },
-        "controller.ResponseData": {
+        "controller.SwaggerAttachUploadResponse": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/controller.MyCode"
+                    "type": "integer",
+                    "example": 1000
                 },
-                "data": {},
+                "data": {
+                    "$ref": "#/definitions/model.AttachUploadResponse"
+                },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "success"
                 }
             }
         },
@@ -293,6 +278,20 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "success"
+                }
+            }
+        },
+        "model.AttachUploadResponse": {
+            "type": "object",
+            "properties": {
+                "fileName": {
+                    "type": "string"
+                },
+                "originName": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         },
