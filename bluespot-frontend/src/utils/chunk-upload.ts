@@ -17,6 +17,8 @@ interface ChunkUploaderOptions {
   concurrency?: number
   retryCount?: number
   onHashProgress?: (progress: number) => void
+  onHashComplete?: () => void
+  onChunkStart?: () => void
   onProgress?: (progress: number) => void
   onSuccess?: (data: MergeChunksResponse) => void
   onError?: (error: unknown) => void
@@ -39,6 +41,8 @@ class ChunkUploader {
   private retryCount: number
 
   private onHashProgress: (progress: number) => void
+  private onHashComplete: () => void
+  private onChunkStart: () => void
   private onProgress: (progress: number) => void
   private onSuccess: (data: UploadChunkResponse) => void
   private onError: (error: unknown) => void
@@ -55,6 +59,8 @@ class ChunkUploader {
     this.retryCount = options.retryCount ?? 2 // 每片重试次数
 
     this.onHashProgress = options.onHashProgress ?? (() => {})
+    this.onHashComplete = options.onHashComplete ?? (() => {})
+    this.onChunkStart = options.onChunkStart ?? (() => {})
     this.onProgress = options.onProgress ?? (() => {})
     this.onSuccess = options.onSuccess ?? (() => {})
     this.onError = options.onError ?? (() => {})
@@ -73,6 +79,7 @@ class ChunkUploader {
       if (!this.fileMd5) {
         throw new Error('文件 MD5 计算失败')
       }
+      this.onHashComplete()
 
       // 2. 预检接口：秒传 + 获取已上传分片
       const verifyRes = await uploadVerify({
@@ -106,6 +113,7 @@ class ChunkUploader {
       }
 
       // 5. 并发上传
+      this.onChunkStart()
       await this.runPool(waitList)
 
       if (this.isStop) return

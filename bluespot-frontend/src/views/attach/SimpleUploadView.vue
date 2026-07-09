@@ -35,15 +35,24 @@
           </div>
         </dl>
       </div>
+      <t-progress :percentage="progressValue"></t-progress>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
 import { post } from '@/utils/request'
 import type { RequestMethodResponse, UploadFile } from 'tdesign-vue-next'
+import FakeProgress from 'fake-progress'
+
+const fp = ref<FakeProgress | null>(null)
+
+const progressValue = computed(() => {
+  if (!fp.value) return 0
+  return parseInt(String(fp.value.progress * 100), 10)
+})
 
 interface AttachUploadResponse {
   fileName: string
@@ -78,13 +87,15 @@ async function uploadFile(uploadFiles: UploadFile | UploadFile[]): Promise<Reque
   formData.append('file', rawFile)
 
   try {
+    fp.value?.start()
     const response = await post<AttachUploadResponse>('/attach/upload', formData, {
       onUploadProgress(event) {
+        console.log('event: ', event);
         if (!event.lengthComputable) return
         currentFile.percent = Math.round((event.loaded / event.total) * 100)
       },
     })
-
+    fp.value?.end()
     uploadResult.value = response
 
     return {
@@ -106,6 +117,13 @@ async function uploadFile(uploadFiles: UploadFile | UploadFile[]): Promise<Reque
     }
   }
 }
+
+onMounted(() => {
+  fp.value = new FakeProgress({
+    timeConstant: 20000, // 总模拟时长 ms
+    autoStart: true, // 实例化自动开始
+  })
+})
 </script>
 
 <style scoped>

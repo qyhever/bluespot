@@ -101,6 +101,18 @@
             <dt>文件大小</dt>
             <dd>{{ fileSizeText || "-" }}</dd>
           </div>
+          <div class="detail-item">
+            <dt>文件指纹耗时</dt>
+            <dd>{{ timeInfo.hash }}s</dd>
+          </div>
+          <div class="detail-item">
+            <dt>分片上传耗时</dt>
+            <dd>{{ timeInfo.chunk }}s</dd>
+          </div>
+          <div class="detail-item">
+            <dt>总耗时</dt>
+            <dd>{{ timeInfo.total }}s</dd>
+          </div>
           <div v-if="status === 'done'" class="detail-item is-success">
             <dt>文件路径</dt>
             <dd>
@@ -139,9 +151,16 @@ const progressInfo = ref({
   hash: 0,
   chunk: 0,
 });
+const timeInfo = ref({
+  hash: "0.00",
+  chunk: "0.00",
+  total: "0.00",
+});
 const status = ref<UploadStatus>("");
 const fileURL = ref("");
 const errorMessage = ref("");
+let uploadStartTime = 0;
+let chunkStartTime = 0;
 
 const isUploading = computed(() => {
   return status.value === "hashing" || status.value === "chunking";
@@ -227,13 +246,27 @@ function checkFile(file: File) {
   return true;
 }
 
+function formatDuration(startTime: number) {
+  if (!startTime) {
+    return "0.00";
+  }
+  return ((performance.now() - startTime) / 1000).toFixed(2);
+}
+
 function reset() {
   progressInfo.value = {
     hash: 0,
     chunk: 0,
   };
+  timeInfo.value = {
+    hash: "0.00",
+    chunk: "0.00",
+    total: "0.00",
+  };
   fileURL.value = "";
   errorMessage.value = "";
+  uploadStartTime = 0;
+  chunkStartTime = 0;
 }
 
 function onChange(event: Event) {
@@ -252,6 +285,7 @@ function onChange(event: Event) {
     name: file.name,
     size: file.size,
   };
+  uploadStartTime = performance.now();
   status.value = "hashing";
   uploader.start(file);
 }
@@ -262,16 +296,32 @@ onBeforeMount(() => {
       progressInfo.value.hash = percent;
       status.value = "hashing";
     },
+    onHashComplete: () => {
+      progressInfo.value.hash = 100;
+      timeInfo.value.hash = formatDuration(uploadStartTime);
+    },
+    onChunkStart: () => {
+      chunkStartTime = performance.now();
+      status.value = "chunking";
+    },
     onProgress: (percent) => {
       progressInfo.value.chunk = percent;
       status.value = "chunking";
     },
     onSuccess: (res) => {
+      if (chunkStartTime) {
+        timeInfo.value.chunk = formatDuration(chunkStartTime);
+      }
+      timeInfo.value.total = formatDuration(uploadStartTime);
       progressInfo.value.chunk = 100;
       status.value = "done";
       fileURL.value = res.url;
     },
     onError: (err) => {
+      if (chunkStartTime) {
+        timeInfo.value.chunk = formatDuration(chunkStartTime);
+      }
+      timeInfo.value.total = formatDuration(uploadStartTime);
       status.value = "error";
       errorMessage.value = err instanceof Error ? err.message : "请稍后重试";
       console.error("上传失败", err);

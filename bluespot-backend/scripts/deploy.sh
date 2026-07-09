@@ -39,7 +39,7 @@ echo "📅 部署时间: $CURRENT_TIME"
 
 echo "📤 开始上传文件到服务器..."
 rsync -avz --progress --partial ./bluespot kr:/opt/apps/bluespot-backend
-rsync -avz --progress --partial --exclude='video-export-flat' --exclude='video-export-grouped' ./public kr:/opt/apps/bluespot-backend
+rsync -avz --progress --partial --exclude='video-export-flat' --exclude='video-export-grouped' --exclude='larges' --exclude='chunks' --exclude='uploads' ./public kr:/opt/apps/bluespot-backend
 rsync -avz --delete --progress --partial ./docs kr:/opt/apps/bluespot-backend
 rsync -avz --progress --partial ./internal/config/app.yml kr:/opt/apps/bluespot-backend
 rsync -avz --progress --partial ./internal/config/prod.yml kr:/opt/apps/bluespot-backend
