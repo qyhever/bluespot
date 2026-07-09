@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Light blue gradient -->
+    <linearGradient id="lightBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4FC3F7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#29B6F6;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Medium blue gradient -->
+    <linearGradient id="mediumBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#29B6F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E88E5;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Dark blue gradient -->
+    <linearGradient id="darkBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E88E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1565C0;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Red accent gradient -->
+    <linearGradient id="redAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF5722;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F44336;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer diamond shape rotated 45 degrees -->
+  <g transform="translate(100,100) rotate(45)">
+    
+    <!-- Top triangle (light blue) -->
+    <polygon points="-60,-60 60,-60 0,0" fill="url(#lightBlue)" />
+    
+    <!-- Right triangle (medium blue) -->
+    <polygon points="60,-60 60,60 0,0" fill="url(#mediumBlue)" />
+    
+    <!-- Bottom triangle (dark blue) -->
+    <polygon points="60,60 -60,60 0,0" fill="url(#darkBlue)" />
+    
+    <!-- Left triangle (medium blue) -->
+    <polygon points="-60,60 -60,-60 0,0" fill="url(#mediumBlue)" />
+    
+    <!-- Small red accent in top-right -->
+    <polygon points="40,-40 60,-40 60,-20 40,-20" fill="url(#redAccent)" rx="4" />
+    
+  </g>
+  
+  <!-- Inner white diamond -->
+  <g transform="translate(100,100) rotate(45)">
+    <polygon points="-25,-25 25,-25 25,25 -25,25" fill="white" opacity="0.95" />
+  </g>
+  
+</svg>
