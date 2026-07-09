@@ -3,6 +3,7 @@ package controller
 import (
 	"errors"
 	"strconv"
+	"time"
 
 	"bluespot/internal/middleware"
 	"bluespot/internal/model"
@@ -71,6 +72,8 @@ func (uc *UploadController) UploadChunk(c *gin.Context) {
 		handleUploadError(c, "upload chunk failed", err)
 		return
 	}
+	// 等待2s后返回
+	time.Sleep(2 * time.Second)
 	ResponseSuccess(c, nil)
 }
 

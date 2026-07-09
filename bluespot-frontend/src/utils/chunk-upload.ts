@@ -4,13 +4,13 @@ import {
   mergeChunks
 } from '@/api/chunk'
 import type { MergeChunksResponse } from '@/api/chunk'
-import { toFixed } from './index'
+// import { toFixed } from './index'
 
-function getInterval(start: number) {
-  const end = new Date().getTime();
-  const interval = (end - start) / 1000;
-  return toFixed(interval);
-}
+// function getInterval(start: number) {
+//   const end = new Date().getTime();
+//   const interval = (end - start) / 1000;
+//   return toFixed(interval);
+// }
 
 interface ChunkUploaderOptions {
   chunkSize?: number
@@ -69,10 +69,7 @@ class ChunkUploader {
       this.file = file
 
       // 1. 计算全文件 MD5
-      const hashStart = new Date().getTime()
       this.fileMd5 = await this.computeFileMd5(file)
-      const hashTime = +getInterval(hashStart)
-      console.log('fileMd5: ', this.fileMd5, 'hashTime: ', hashTime)
       if (!this.fileMd5) {
         throw new Error('文件 MD5 计算失败')
       }
@@ -151,7 +148,6 @@ class ChunkUploader {
         | { type: 'error'; message: string }
 
       if (data.type === 'progress') {
-        console.log('正在计算文件指纹：', data.progress)
         this.onHashProgress(data.progress)
       }
 
