@@ -75,8 +75,12 @@ type PostalConfig struct {
 }
 
 type AttachConfig struct {
-	ViewAttachBaseURL string `mapstructure:"view_attach_base_url"`
-	UploadDirPath     string `mapstructure:"upload_dir_path"`
+	ViewAttachBaseURL    string `mapstructure:"view_attach_base_url"`
+	UploadDirPath        string `mapstructure:"upload_dir_path"`
+	ViewLargeFileBaseURL string `mapstructure:"view_large_file_base_url"`
+	UploadLargeFilePath  string `mapstructure:"upload_large_file_path"`
+	ChunkDirPath         string `mapstructure:"chunk_dir_path"`
+	ChunkDirSalt         string `mapstructure:"chunk_dir_salt"`
 }
 
 type ThirdPartyConfig struct {
@@ -167,6 +171,10 @@ func bindEnvVars(loader *viper.Viper) {
 	loader.BindEnv("upload_dir_path", "BLUESPOT_UPLOAD_DIR_PATH")
 	loader.BindEnv("attach.view_attach_base_url", "BLUESPOT_ATTACH_VIEW_ATTACH_BASE_URL")
 	loader.BindEnv("attach.upload_dir_path", "BLUESPOT_ATTACH_UPLOAD_DIR_PATH")
+	loader.BindEnv("attach.view_large_file_base_url", "BLUESPOT_ATTACH_VIEW_LARGE_FILE_BASE_PATH")
+	loader.BindEnv("attach.upload_large_file_path", "BLUESPOT_ATTACH_UPLOAD_LARGE_FILE_PATH")
+	loader.BindEnv("attach.chunk_dir_path", "BLUESPOT_ATTACH_CHUNK_DIR_PATH")
+	loader.BindEnv("attach.chunk_dir_salt", "BLUESPOT_ATTACH_CHUNK_DIR_SALT")
 
 	loader.BindEnv("server.port", "BLUESPOT_SERVER_PORT")
 
@@ -241,6 +249,38 @@ func GetAttachViewBaseURL() string {
 		return GlobalConfig.Attach.ViewAttachBaseURL
 	}
 	return GlobalConfig.ViewAttachBaseURL
+}
+
+// GetAttachLargeFileUploadPath 获取大文件上传存放目录。
+func GetAttachLargeFileUploadPath() string {
+	if GlobalConfig == nil {
+		return ""
+	}
+	return GlobalConfig.Attach.UploadLargeFilePath
+}
+
+// GetAttachLargeFileViewBaseURL 获取大文件访问地址前缀。
+func GetAttachLargeFileViewBaseURL() string {
+	if GlobalConfig == nil {
+		return ""
+	}
+	return GlobalConfig.Attach.ViewLargeFileBaseURL
+}
+
+// GetAttachChunkDirPath 获取分片文件存放目录。
+func GetAttachChunkDirPath() string {
+	if GlobalConfig == nil {
+		return ""
+	}
+	return GlobalConfig.Attach.ChunkDirPath
+}
+
+// GetAttachChunkDirSalt 获取分片上传 ID 计算盐值。
+func GetAttachChunkDirSalt() string {
+	if GlobalConfig == nil {
+		return ""
+	}
+	return GlobalConfig.Attach.ChunkDirSalt
 }
 
 // GetServerAddr 获取服务器地址

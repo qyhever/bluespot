@@ -1,8 +1,10 @@
-import { uploadVerify, uploadChunk, mergeChunks } from '@/api/chunk'
+import {
+  uploadVerify,
+  uploadChunk as uploadChunkApi,
+  mergeChunks
+} from '@/api/chunk'
 import type { MergeChunksResponse } from '@/api/chunk'
 import { toFixed } from './index'
-
-const flag = true
 
 function getInterval(start: number) {
   const end = new Date().getTime();
@@ -71,9 +73,6 @@ class ChunkUploader {
       this.fileMd5 = await this.computeFileMd5(file)
       const hashTime = +getInterval(hashStart)
       console.log('fileMd5: ', this.fileMd5, 'hashTime: ', hashTime)
-      if (flag) {
-        return
-      }
       if (!this.fileMd5) {
         throw new Error('文件 MD5 计算失败')
       }
@@ -206,12 +205,13 @@ class ChunkUploader {
 
     while (times <= this.retryCount) {
       try {
-        await uploadChunk({
+        await uploadChunkApi({
           chunk: item.blob,
           uploadId: this.uploadId,
           fileMd5: this.fileMd5,
           chunkIndex: item.index,
-          fileName: this.file.name
+          fileName: this.file.name,
+          chunkTotal: this.chunkList.length
         })
         return true
       } catch (error) {

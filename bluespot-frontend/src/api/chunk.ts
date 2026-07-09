@@ -19,6 +19,7 @@ export interface UploadChunkRequest {
   fileMd5: string
   chunkIndex: number
   fileName: string
+  chunkTotal: number
 }
 
 export interface MergeChunksRequest {
@@ -47,13 +48,17 @@ export function uploadVerify(params: UploadVerifyRequest) {
  * @returns 上传结果
  */
 export function uploadChunk(params: UploadChunkRequest) {
+  const {
+    chunkIndex,
+    chunkTotal,
+  } = params
   const fd = new FormData()
   fd.append('chunk', params.chunk)
   fd.append('uploadId', params.uploadId)
   fd.append('fileMd5', params.fileMd5)
-  fd.append('chunkIndex', params.chunkIndex.toString())
+  fd.append('chunkIndex', chunkIndex.toString())
   fd.append('fileName', params.fileName)
-  return post<void>('/upload/chunk', fd)
+  return post<void>(`/upload/chunk?chunkIndex=${chunkIndex}&chunkTotal=${chunkTotal}`, fd)
 }
 
 /**

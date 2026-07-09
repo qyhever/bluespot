@@ -44,3 +44,7 @@ postal:
 attach:
   view_attach_base_url: "http://localhost:6306/public/uploads" # 上传文件访问地址前缀
   upload_dir_path: "./public/uploads" # 上传文件存放目录
+  view_large_file_base_url: "http://localhost:6306/public/larges" # 大文件访问地址前缀
+  upload_large_file_path: "./public/larges" # 大文件存放目录
+  chunk_dir_path: "./public/chunks" # 分片文件存放目录
+  chunk_dir_salt: "bluespot_chunk_upload_salt"

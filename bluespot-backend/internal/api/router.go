@@ -49,6 +49,9 @@ func SetupRouter() *gin.Engine {
 	attachRepo := persistence.NewAttachRepository()
 	attachService := service.NewAttachService(attachRepo)
 	attachController := controller.NewAttachController(attachService)
+	uploadRepo := persistence.NewUploadRepository()
+	uploadService := service.NewUploadService(uploadRepo)
+	uploadController := controller.NewUploadController(uploadService)
 
 	v1 := r.Group("/api")
 
@@ -70,6 +73,12 @@ func SetupRouter() *gin.Engine {
 	attachGroup := v1.Group("/attach")
 	attachGroup.Use(middleware.JWTAuthMiddleware())
 	attachGroup.POST("/upload", attachController.Upload)
+
+	uploadGroup := v1.Group("/upload")
+	uploadGroup.Use(middleware.JWTAuthMiddleware())
+	uploadGroup.POST("/verify", uploadController.Verify)
+	uploadGroup.POST("/chunk", uploadController.UploadChunk)
+	uploadGroup.POST("/merge", uploadController.Merge)
 
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{
