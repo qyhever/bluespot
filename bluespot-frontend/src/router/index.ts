@@ -35,16 +35,25 @@ const router = createRouter({
       name: 'simple-upload',
       component: () => import('../views/attach/SimpleUploadView.vue'),
     },
+    {
+      path: '/attach/chunk-upload',
+      name: 'chunk-upload',
+      component: () => import('../views/attach/ChunkUploadView.vue'),
+    },
   ],
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const userStore = useUserStore()
   const hasToken = Boolean(userStore.accessToken)
   const isLoginPage = to.path === LOGIN_PATH
 
   if (isLoginPage) {
     return hasToken ? HOME_PATH : true
+  }
+
+  if (hasToken && !userStore.userInfo) {
+    await userStore.fetchUserInfo()
   }
 
   return hasToken
