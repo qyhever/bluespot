@@ -17,8 +17,11 @@ fi
 PROJECT_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$PROJECT_ROOT"
 
+export TZ="Asia/Shanghai"
+
 echo "🚀 开始构建项目..."
 echo "🎯 部署目标: $DEPLOY_TARGET"
+echo "🕒 构建时区: $TZ"
 
 # 1. 检查并创建 public 目录
 if [ ! -d "public" ]; then
@@ -53,7 +56,9 @@ rsync -avz --progress --partial ./bluespot "${DEPLOY_TARGET}:/opt/apps/bluespot-
 rsync -avz --progress --partial --exclude='video-export-flat' --exclude='video-export-grouped' --exclude='larges' --exclude='chunks' --exclude='uploads' ./public "${DEPLOY_TARGET}:/opt/apps/bluespot-backend"
 rsync -avz --delete --progress --partial ./docs "${DEPLOY_TARGET}:/opt/apps/bluespot-backend"
 rsync -avz --progress --partial ./internal/config/app.yml "${DEPLOY_TARGET}:/opt/apps/bluespot-backend"
-rsync -avz --progress --partial ./internal/config/prod.yml "${DEPLOY_TARGET}:/opt/apps/bluespot-backend"
+if [ "$DEPLOY_TARGET" = "kr" ]; then
+    rsync -avz --progress --partial ./internal/config/prod.yml "${DEPLOY_TARGET}:/opt/apps/bluespot-backend"
+fi
 rsync -avz --progress --partial ./internal/data "${DEPLOY_TARGET}:/opt/apps/bluespot-backend"
 echo "✅ 上传完成！"
 

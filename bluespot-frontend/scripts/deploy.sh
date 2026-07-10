@@ -15,8 +15,11 @@ fi
 PROJECT_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$PROJECT_ROOT"
 
+export TZ="Asia/Shanghai"
+
 echo "🚀 开始构建前端项目..."
 echo "🎯 部署目标: $DEPLOY_TARGET"
+echo "🕒 构建时区: $TZ"
 
 pnpm build
 

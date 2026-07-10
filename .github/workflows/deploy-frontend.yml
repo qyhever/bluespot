@@ -21,6 +21,8 @@ jobs:
     name: Build and deploy frontend
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      TZ: Asia/Shanghai
 
     steps:
       - name: Checkout repository
