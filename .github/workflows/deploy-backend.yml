@@ -1,0 +1,54 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'bluespot-backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-backend-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: bluespot-backend/go.mod
+          cache-dependency-path: bluespot-backend/go.sum
+
+      - name: Configure SSH
+        shell: bash
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_SSH_RSA: ${{ secrets.SERVER_SSH_RSA }}
+        run: |
+          : "${SERVER_HOST:?SERVER_HOST secret is required}"
+          : "${SERVER_SSH_RSA:?SERVER_SSH_RSA secret is required}"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SERVER_SSH_RSA" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy backend
+        shell: bash
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+        run: bash bluespot-backend/scripts/deploy.sh
