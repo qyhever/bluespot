@@ -16,4 +16,5 @@ type UploadRepository interface {
 	ChunkExists(uploadID string, chunkIndex int) (bool, error)
 	MergeChunks(uploadID string, chunkLength int, finalFileName string) error
 	CleanupChunks(uploadID string) error
+	DeleteFinalFile(fileName string) error
 }

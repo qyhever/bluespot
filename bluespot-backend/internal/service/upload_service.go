@@ -10,10 +10,13 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"bluespot/internal/config"
 	"bluespot/internal/model"
 	"bluespot/internal/repository"
+
+	"go.uber.org/zap"
 )
 
 var (
@@ -23,11 +26,19 @@ var (
 )
 
 type UploadService struct {
-	repo repository.UploadRepository
+	repo                 repository.UploadRepository
+	deleteFinalFileDelay time.Duration
+	scheduleDelete       func(time.Duration, func())
 }
 
 func NewUploadService(repo repository.UploadRepository) *UploadService {
-	return &UploadService{repo: repo}
+	return &UploadService{
+		repo:                 repo,
+		deleteFinalFileDelay: 10 * time.Minute,
+		scheduleDelete: func(delay time.Duration, fn func()) {
+			time.AfterFunc(delay, fn)
+		},
+	}
 }
 
 func (s *UploadService) Verify(userID uint64, req model.UploadVerifyRequest) (*model.UploadVerifyResponse, error) {
@@ -136,11 +147,23 @@ func (s *UploadService) Merge(userID uint64, req model.UploadMergeRequest) (*mod
 	if err := s.repo.CleanupChunks(req.UploadID); err != nil {
 		return nil, err
 	}
+	s.scheduleFinalFileDeletion(finalFileName)
 
 	return &model.UploadMergeResponse{
 		URL: finalURL,
 		Msg: "合并成功",
 	}, nil
+}
+
+func (s *UploadService) scheduleFinalFileDeletion(finalFileName string) {
+	if s.scheduleDelete == nil {
+		return
+	}
+	s.scheduleDelete(s.deleteFinalFileDelay, func() {
+		if err := s.repo.DeleteFinalFile(finalFileName); err != nil {
+			zap.L().Error("delete merged upload file failed", zap.String("file_name", finalFileName), zap.Error(err))
+		}
+	})
 }
 
 func GenerateUploadID(fileMD5 string, userID uint64, salt string) string {

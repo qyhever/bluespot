@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"testing"
+	"time"
 
 	"bluespot/internal/config"
 	"bluespot/internal/model"
@@ -118,6 +119,12 @@ func TestUploadMergeFailsWhenAnyChunkMissing(t *testing.T) {
 
 func TestUploadMergeCreatesFinalFileAndCleansChunks(t *testing.T) {
 	svc, dirs := newTestUploadService(t)
+	var scheduled []func()
+	var scheduledDelay time.Duration
+	svc.scheduleDelete = func(delay time.Duration, fn func()) {
+		scheduledDelay = delay
+		scheduled = append(scheduled, fn)
+	}
 	userID := uint64(7)
 	fileMD5 := "0123456789abcdef0123456789abcdef"
 	uploadID := GenerateUploadID(fileMD5, userID, "salt")
@@ -149,6 +156,12 @@ func TestUploadMergeCreatesFinalFileAndCleansChunks(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(dirs.chunks, uploadID)); !os.IsNotExist(err) {
 		t.Fatalf("expected chunks dir cleanup, stat err = %v", err)
 	}
+	if scheduledDelay != 10*time.Minute {
+		t.Fatalf("scheduled delay = %v, want %v", scheduledDelay, 10*time.Minute)
+	}
+	if len(scheduled) != 1 {
+		t.Fatalf("scheduled delete count = %d, want 1", len(scheduled))
+	}
 
 	repeated, err := svc.Merge(userID, model.UploadMergeRequest{
 		UploadID:    uploadID,
@@ -160,6 +173,14 @@ func TestUploadMergeCreatesFinalFileAndCleansChunks(t *testing.T) {
 	}
 	if repeated.URL != got.URL || repeated.Msg != got.Msg {
 		t.Fatalf("unexpected repeated merge response: %#v", repeated)
+	}
+	if len(scheduled) != 1 {
+		t.Fatalf("repeated merge scheduled delete count = %d, want 1", len(scheduled))
+	}
+
+	scheduled[0]()
+	if _, err := os.Stat(filepath.Join(dirs.large, "0123456789abcdef0123456789abcdef.txt")); !os.IsNotExist(err) {
+		t.Fatalf("expected scheduled delete to remove final file, stat err = %v", err)
 	}
 }
 

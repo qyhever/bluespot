@@ -24,9 +24,9 @@ func NewUploadRepository() repository.UploadRepository {
 }
 
 func (r *UploadRepositoryImpl) FinalFileExists(fileName string) (bool, error) {
-	fileName = strings.TrimSpace(fileName)
-	if fileName == "" || fileName != filepath.Base(fileName) {
-		return false, fmt.Errorf("invalid final file name")
+	fileName, err := validateFinalFileName(fileName)
+	if err != nil {
+		return false, err
 	}
 	path, err := finalFilePath(fileName)
 	if err != nil {
@@ -196,8 +196,9 @@ func (r *UploadRepositoryImpl) MergeChunks(uploadID string, chunkLength int, fin
 	if chunkLength <= 0 {
 		return fmt.Errorf("invalid chunk length")
 	}
-	if finalFileName == "" || finalFileName != filepath.Base(finalFileName) {
-		return fmt.Errorf("invalid final file name")
+	finalFileName, err := validateFinalFileName(finalFileName)
+	if err != nil {
+		return err
 	}
 
 	srcDir, err := chunkDir(uploadID)
@@ -249,6 +250,21 @@ func (r *UploadRepositoryImpl) MergeChunks(uploadID string, chunkLength int, fin
 	return nil
 }
 
+func (r *UploadRepositoryImpl) DeleteFinalFile(fileName string) error {
+	fileName, err := validateFinalFileName(fileName)
+	if err != nil {
+		return err
+	}
+	path, err := finalFilePath(fileName)
+	if err != nil {
+		return err
+	}
+	if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("delete final file failed: %w", err)
+	}
+	return nil
+}
+
 func (r *UploadRepositoryImpl) CleanupChunks(uploadID string) error {
 	dir, err := chunkDir(uploadID)
 	if err != nil {
@@ -270,6 +286,14 @@ func chunkDir(uploadID string) (string, error) {
 		return "", fmt.Errorf("chunk dir path is empty")
 	}
 	return filepath.Join(root, uploadID), nil
+}
+
+func validateFinalFileName(fileName string) (string, error) {
+	fileName = strings.TrimSpace(fileName)
+	if fileName == "" || fileName != filepath.Base(fileName) {
+		return "", fmt.Errorf("invalid final file name")
+	}
+	return fileName, nil
 }
 
 func finalFilePath(fileName string) (string, error) {
