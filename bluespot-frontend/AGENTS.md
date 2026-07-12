@@ -85,6 +85,7 @@ const defaultOptions = {
 - 业务状态放在 `src/stores/`，优先使用 Pinia composition store 写法。
 - 接口响应类型优先复用 `types/global.d.ts` 中的 `IApiResponse<T>`、`IPaginationResponse<T>` 等全局类型。
 - 请求层不要绕过统一封装，除非是 `meta.json`、静态资源或第三方直连请求。
+- 页面组件不要直接写业务请求。优先将接口类型和请求函数抽到请求层：跨页面或模块级接口放在 `src/api/*.ts`，页面私有接口可放在当前页面同级 `service.ts`。请求函数内部复用 `src/utils/request.ts` 暴露的 `get`、`post`、`put`、`del`、`patch`。
 - 不要把后端地址硬编码到业务组件中，开发代理由 `vite.config.ts` 统一维护。
 
 ## 当前注意事项

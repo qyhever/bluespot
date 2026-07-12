@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
-import { post } from '@/utils/request'
+import { sendMail } from './service'
 import type { FormProps, SubmitContext } from 'tdesign-vue-next'
 
 interface SendMailForm {
@@ -99,7 +99,7 @@ async function handleSubmit(context: SubmitContext<SendMailForm>) {
 
   submitting.value = true
   try {
-    await post<void>('/mail', {
+    await sendMail({
       to: formData.to.trim(),
       subject: formData.subject.trim(),
       body: formData.body.trim(),
