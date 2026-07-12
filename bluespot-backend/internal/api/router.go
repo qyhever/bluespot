@@ -52,10 +52,13 @@ func SetupRouter() *gin.Engine {
 	uploadRepo := persistence.NewUploadRepository()
 	uploadService := service.NewUploadService(uploadRepo)
 	uploadController := controller.NewUploadController(uploadService)
+	mailService := service.NewMailService()
+	mailController := controller.NewMailController(mailService)
 
 	v1 := r.Group("/api")
 
 	v1.GET("/meta", metaController.GetMeta)
+	v1.POST("/mail", mailController.Send)
 
 	appGroup := v1.Group("/app")
 	{

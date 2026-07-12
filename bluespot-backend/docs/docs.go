@@ -154,6 +154,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/mail": {
+            "post": {
+                "description": "根据收件人、标题和正文发送邮件。正文支持 HTML。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "mail"
+                ],
+                "summary": "发送邮件",
+                "parameters": [
+                    {
+                        "description": "邮件参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SendMailRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
         "/meta": {
             "get": {
                 "description": "返回 public/meta.json 中的动态 JSON 内容；文件缺失时返回 deployTime=unknown。",
@@ -217,6 +251,74 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controller.MyCode": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+                1000,
+                1001,
+                1002,
+                1003,
+                1004,
+                1005,
+                1006,
+                1007,
+                1008,
+                1009,
+                1010
+            ],
+            "x-enum-comments": {
+                "CodeInvalidParam": "请求参数错误",
+                "CodeInvalidPassword": "用户名或密码错误",
+                "CodeInvalidToken": "无效的token",
+                "CodeNeedLogin": "需要登录",
+                "CodePermissionDenied": "权限不足",
+                "CodeResourceExists": "资源已存在",
+                "CodeResourceNotExist": "资源不存在",
+                "CodeServerBusy": "服务繁忙",
+                "CodeSuccess": "成功",
+                "CodeUserExist": "用户已存在",
+                "CodeUserNotExist": "用户不存在"
+            },
+            "x-enum-descriptions": [
+                "成功",
+                "请求参数错误",
+                "用户已存在",
+                "用户不存在",
+                "用户名或密码错误",
+                "服务繁忙",
+                "需要登录",
+                "无效的token",
+                "资源已存在",
+                "资源不存在",
+                "权限不足"
+            ],
+            "x-enum-varnames": [
+                "CodeSuccess",
+                "CodeInvalidParam",
+                "CodeUserExist",
+                "CodeUserNotExist",
+                "CodeInvalidPassword",
+                "CodeServerBusy",
+                "CodeNeedLogin",
+                "CodeInvalidToken",
+                "CodeResourceExists",
+                "CodeResourceNotExist",
+                "CodePermissionDenied"
+            ]
+        },
+        "controller.ResponseData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "$ref": "#/definitions/controller.MyCode"
+                },
+                "data": {},
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "controller.SwaggerAttachUploadResponse": {
             "type": "object",
             "properties": {
@@ -347,6 +449,25 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SendMailRequest": {
+            "type": "object",
+            "required": [
+                "body",
+                "subject",
+                "to"
+            ],
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "subject": {
+                    "type": "string"
+                },
+                "to": {
                     "type": "string"
                 }
             }
