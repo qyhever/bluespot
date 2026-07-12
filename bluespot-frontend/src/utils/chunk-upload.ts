@@ -1,8 +1,4 @@
-import {
-  uploadVerify,
-  uploadChunk as uploadChunkApi,
-  mergeChunks
-} from '@/api/chunk'
+import { uploadVerify, uploadChunk as uploadChunkApi, mergeChunks } from '@/api/chunk'
 import type { MergeChunksResponse } from '@/api/chunk'
 // import { toFixed } from './index'
 
@@ -85,13 +81,13 @@ class ChunkUploader {
       const verifyRes = await uploadVerify({
         fileMd5: this.fileMd5,
         fileName: this.file.name,
-        fileSize: this.file.size
+        fileSize: this.file.size,
       })
 
       if (verifyRes.isExists) {
         this.onSuccess({
           url: verifyRes.url,
-          msg: '秒传成功'
+          msg: '秒传成功',
         })
         return
       }
@@ -103,9 +99,7 @@ class ChunkUploader {
       this.chunkList = this.splitFile(file)
 
       // 4. 过滤已上传分片
-      const waitList = this.chunkList.filter(
-        item => !this.uploadedChunks.includes(item.index)
-      )
+      const waitList = this.chunkList.filter((item) => !this.uploadedChunks.includes(item.index))
 
       if (waitList.length === 0) {
         await this.merge()
@@ -136,46 +130,43 @@ class ChunkUploader {
    * 增量计算文件 MD5
    */
   private computeFileMd5(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const worker = new Worker(
-      new URL('./md5.worker.ts', import.meta.url),
-      {
-        type: 'module'
-      }
-    )
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(new URL('./md5.worker.ts', import.meta.url), {
+        type: 'module',
+      })
 
-    worker.postMessage({
-      file,
-      chunkSize: this.chunkSize
+      worker.postMessage({
+        file,
+        chunkSize: this.chunkSize,
+      })
+
+      worker.onmessage = (event) => {
+        const data = event.data as
+          | { type: 'progress'; progress: number }
+          | { type: 'success'; md5: string }
+          | { type: 'error'; message: string }
+
+        if (data.type === 'progress') {
+          this.onHashProgress(data.progress)
+        }
+
+        if (data.type === 'success') {
+          worker.terminate()
+          resolve(data.md5)
+        }
+
+        if (data.type === 'error') {
+          worker.terminate()
+          reject(new Error(data.message))
+        }
+      }
+
+      worker.onerror = (error) => {
+        worker.terminate()
+        reject(error)
+      }
     })
-
-    worker.onmessage = event => {
-      const data = event.data as
-        | { type: 'progress'; progress: number }
-        | { type: 'success'; md5: string }
-        | { type: 'error'; message: string }
-
-      if (data.type === 'progress') {
-        this.onHashProgress(data.progress)
-      }
-
-      if (data.type === 'success') {
-        worker.terminate()
-        resolve(data.md5)
-      }
-
-      if (data.type === 'error') {
-        worker.terminate()
-        reject(new Error(data.message))
-      }
-    }
-
-    worker.onerror = error => {
-      worker.terminate()
-      reject(error)
-    }
-  })
-}
+  }
 
   /**
    * 文件切分
@@ -190,7 +181,7 @@ class ChunkUploader {
 
       list.push({
         blob: file.slice(start, end),
-        index: i
+        index: i,
       })
     }
 
@@ -215,7 +206,7 @@ class ChunkUploader {
           fileMd5: this.fileMd5,
           chunkIndex: item.index,
           fileName: this.file.name,
-          chunkTotal: this.chunkList.length
+          chunkTotal: this.chunkList.length,
         })
         return true
       } catch (error) {
@@ -249,10 +240,7 @@ class ChunkUploader {
         finished++
 
         const progress = Number(
-          (
-            ((this.uploadedChunks.length + finished) / totalAll) *
-            100
-          ).toFixed(2)
+          (((this.uploadedChunks.length + finished) / totalAll) * 100).toFixed(2),
         )
 
         this.onProgress(progress)
@@ -261,9 +249,9 @@ class ChunkUploader {
 
     const workers = Array.from(
       {
-        length: Math.min(this.concurrency, tasks.length)
+        length: Math.min(this.concurrency, tasks.length),
       },
-      () => worker()
+      () => worker(),
     )
 
     await Promise.all(workers)
@@ -276,7 +264,7 @@ class ChunkUploader {
     const res = await mergeChunks({
       uploadId: this.uploadId,
       fileMd5: this.fileMd5,
-      chunkLength: this.chunkList.length
+      chunkLength: this.chunkList.length,
     })
 
     this.onSuccess(res)

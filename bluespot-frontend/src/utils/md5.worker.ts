@@ -40,7 +40,7 @@ self.onmessage = async (event: MessageEvent<WorkerInput>) => {
 
       self.postMessage({
         type: 'progress',
-        progress
+        progress,
       } satisfies WorkerProgress)
     }
 
@@ -48,12 +48,12 @@ self.onmessage = async (event: MessageEvent<WorkerInput>) => {
 
     self.postMessage({
       type: 'success',
-      md5
+      md5,
     } satisfies WorkerSuccess)
   } catch (error) {
     self.postMessage({
       type: 'error',
-      message: error instanceof Error ? error.message : 'MD5 计算失败'
+      message: error instanceof Error ? error.message : 'MD5 计算失败',
     } satisfies WorkerError)
   }
 }

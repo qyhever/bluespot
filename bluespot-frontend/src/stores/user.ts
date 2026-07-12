@@ -1,9 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import {
-  refreshAccessToken as refreshAccessTokenApi,
-  type AuthTokenResponse,
-} from '@/api/global'
+import { refreshAccessToken as refreshAccessTokenApi, type AuthTokenResponse } from '@/api/global'
 import { getUserInfo, type UserInfo } from '@/api/user'
 
 const ACCESS_TOKEN_KEY = 'accessToken'

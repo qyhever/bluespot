@@ -1,11 +1,11 @@
 <template>
   <div
     v-if="visible"
-    class="fixed top-4 right-4 z-[9999] bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-sm"
+    class="fixed top-4 right-4 z-[9999] max-w-sm rounded-lg border border-gray-200 bg-white p-4 shadow-lg"
   >
     <div class="flex items-start gap-3">
       <div class="flex-shrink-0">
-        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="h-6 w-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -35,19 +35,19 @@
         <p class="mt-1 text-sm text-gray-600">检测到新版本已发布，建议立即更新以获得最佳体验。</p>
         <div class="mt-3 flex gap-2">
           <button
-            class="cursor-pointer inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            class="inline-flex cursor-pointer items-center rounded border border-transparent bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
             @click="handleUpdate"
           >
             立即更新
           </button>
           <button
-            class="cursor-pointer inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            class="inline-flex cursor-pointer items-center rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
             @click="handleLater"
           >
             稍后提醒
           </button>
           <button
-            class="cursor-pointer inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-gray-600"
+            class="inline-flex cursor-pointer items-center px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-gray-600"
             @click="handleClose"
           >
             忽略
@@ -55,7 +55,7 @@
         </div>
       </div>
       <button class="flex-shrink-0 text-gray-400 hover:text-gray-600" @click="handleClose">
-        <svg class="w-[16px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="h-[14px] w-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"

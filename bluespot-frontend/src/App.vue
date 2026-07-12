@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <router-view />
-    <VersionUpdatePopup  ref="versionUpdatePopupRef" />
+    <VersionUpdatePopup ref="versionUpdatePopupRef" />
   </div>
 </template>
 

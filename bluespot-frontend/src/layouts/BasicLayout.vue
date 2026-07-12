@@ -20,13 +20,13 @@
         </template>
       </t-menu>
     </div>
-    <div class="basic-main flex-auto min-w-0">
+    <div class="basic-main min-w-0 flex-auto">
       <div class="header-placeholder" />
       <div class="basic-header">
         <div class="header-content">
           <router-link class="flex items-center gap-2" to="/" title="bluespot">
             <img src="@/assets/logo.svg" alt="logo" width="48" />
-            <h1 class="font-bold text-2xl">bluespot</h1>
+            <h1 class="text-2xl font-bold">bluespot</h1>
           </router-link>
           <div class="header-user">
             <t-dropdown>

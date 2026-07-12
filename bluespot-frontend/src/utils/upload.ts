@@ -1,4 +1,4 @@
-import {request} from './request'
+import { request } from './request'
 
 const maxRequest = 6
 
@@ -21,8 +21,8 @@ export const verifyFile = (md5: string, chunks: IChunkItem[], fileName: string) 
       // chunksObj: { name: md5, chunkNames },
       // fileName: md5 + '.' + extName,
       chunkNames: chunks.map((_, i) => i),
-      hashFileName: md5 + '.' + extName
-    }
+      hashFileName: md5 + '.' + extName,
+    },
   })
 }
 
@@ -45,7 +45,7 @@ export const createChunks = (file: File, chunksize = 3 * 1024 * 1024) => {
     const raw = file.slice(start, start + chunksize)
     chunks.push({
       raw,
-      chunkIndex: index
+      chunkIndex: index,
     })
     index++
     start += chunksize
@@ -61,8 +61,13 @@ export const createChunks = (file: File, chunksize = 3 * 1024 * 1024) => {
  * @param fileName 文件名
  * @param index 下标：失败辅助标识
  */
-const uploadChunkFile = (chunk: IChunkItem, md5 = '', callback: (progress: number) => void, chunkLength: number): Promise<{
-  fileHash: string,
+const uploadChunkFile = (
+  chunk: IChunkItem,
+  md5 = '',
+  callback: (progress: number) => void,
+  chunkLength: number,
+): Promise<{
+  fileHash: string
   chunkIndex: number
 }> => {
   const formData = new FormData()
@@ -73,12 +78,10 @@ const uploadChunkFile = (chunk: IChunkItem, md5 = '', callback: (progress: numbe
     data: formData,
     params: {
       fileHash: md5,
-      chunkIndex: chunk.chunkIndex
-    }
-  }).then(res => {
-    callback(
-      parseInt(String((chunk.chunkIndex + 1) / chunkLength * 100), 10)
-    )
+      chunkIndex: chunk.chunkIndex,
+    },
+  }).then((res) => {
+    callback(parseInt(String(((chunk.chunkIndex + 1) / chunkLength) * 100), 10))
     return res
   })
 }
@@ -90,7 +93,11 @@ const uploadChunkFile = (chunk: IChunkItem, md5 = '', callback: (progress: numbe
  * @param fileName 文件名
  */
 
-export const uploadChunks = (chunks: IChunkItem[], md5: string, callback: (progress: number) => void) => {
+export const uploadChunks = (
+  chunks: IChunkItem[],
+  md5: string,
+  callback: (progress: number) => void,
+) => {
   return new Promise((resolve, reject) => {
     const requestSliceArr: IChunkItem[][] = []
     let start = 0
@@ -100,9 +107,9 @@ export const uploadChunks = (chunks: IChunkItem[], md5: string, callback: (progr
     }
     let index = 0
     const requestReaults: {
-      fileHash: string;
-      chunkIndex: number;
-  }[] = []
+      fileHash: string
+      chunkIndex: number
+    }[] = []
     const requestErrReaults: Error[] = []
 
     const request = async () => {
@@ -111,16 +118,16 @@ export const uploadChunks = (chunks: IChunkItem[], md5: string, callback: (progr
         return
       }
       const sliceChunks = requestSliceArr[index]!
-      Promise.all(
-        sliceChunks.map(chunk => uploadChunkFile(chunk, md5, callback, chunks.length))
-      ).then((res) => {
-        requestReaults.push(...(Array.isArray(res) ? res : []))
-        index++
-        request()
-      }).catch((err: Error) => {
-        requestErrReaults.push(...(Array.isArray(err) ? err : []))
-        reject(requestErrReaults)
-      })
+      Promise.all(sliceChunks.map((chunk) => uploadChunkFile(chunk, md5, callback, chunks.length)))
+        .then((res) => {
+          requestReaults.push(...(Array.isArray(res) ? res : []))
+          index++
+          request()
+        })
+        .catch((err: Error) => {
+          requestErrReaults.push(...(Array.isArray(err) ? err : []))
+          reject(requestErrReaults)
+        })
     }
     request()
   })
@@ -137,7 +144,7 @@ export const mergeChunks = async (md5 = '', fileName: string) => {
     method: 'POST',
     data: {
       fileHash: md5,
-      fileName
-    }
+      fileName,
+    },
   })
 }

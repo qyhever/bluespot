@@ -48,10 +48,7 @@ export function uploadVerify(params: UploadVerifyRequest) {
  * @returns 上传结果
  */
 export function uploadChunk(params: UploadChunkRequest) {
-  const {
-    chunkIndex,
-    chunkTotal,
-  } = params
+  const { chunkIndex, chunkTotal } = params
   const fd = new FormData()
   fd.append('chunk', params.chunk)
   fd.append('uploadId', params.uploadId)

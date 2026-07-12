@@ -90,7 +90,7 @@ async function uploadFile(uploadFiles: UploadFile | UploadFile[]): Promise<Reque
     fp.value?.start()
     const response = await post<AttachUploadResponse>('/attach/upload', formData, {
       onUploadProgress(event) {
-        console.log('event: ', event);
+        console.log('event: ', event)
         if (!event.lengthComputable) return
         currentFile.percent = Math.round((event.loaded / event.total) * 100)
       },

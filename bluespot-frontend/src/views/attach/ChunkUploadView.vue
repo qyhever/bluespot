@@ -33,11 +33,11 @@
             <t-icon name="upload" />
           </span>
           <span class="dropzone-title">
-            {{ isUploading ? "文件上传处理中" : "选择 MP4 视频文件" }}
+            {{ isUploading ? '文件上传处理中' : '选择 MP4 视频文件' }}
           </span>
           <span class="dropzone-desc">
             {{
-              isUploading ? "请等待当前任务完成后再选择新文件" : "点击此区域选择文件，最大支持 10GB"
+              isUploading ? '请等待当前任务完成后再选择新文件' : '点击此区域选择文件，最大支持 10GB'
             }}
           </span>
           <span class="upload-action">浏览文件</span>
@@ -95,11 +95,11 @@
         <dl class="file-detail">
           <div class="detail-item">
             <dt>文件名称</dt>
-            <dd>{{ fileInfo.name || "尚未选择文件" }}</dd>
+            <dd>{{ fileInfo.name || '尚未选择文件' }}</dd>
           </div>
           <div class="detail-item">
             <dt>文件大小</dt>
-            <dd>{{ fileSizeText || "-" }}</dd>
+            <dd>{{ fileSizeText || '-' }}</dd>
           </div>
           <div class="detail-item">
             <dt>文件指纹耗时</dt>
@@ -130,204 +130,204 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from "vue";
-import { MessagePlugin } from "tdesign-vue-next";
-import ChunkUploader from "@/utils/chunk-upload";
+import { computed, onBeforeMount, ref } from 'vue'
+import { MessagePlugin } from 'tdesign-vue-next'
+import ChunkUploader from '@/utils/chunk-upload'
 
 defineOptions({
-  name: "ChunkUploadView",
-});
+  name: 'ChunkUploadView',
+})
 
-type UploadStatus = "" | "hashing" | "chunking" | "done" | "error";
+type UploadStatus = '' | 'hashing' | 'chunking' | 'done' | 'error'
 
-let uploader: ChunkUploader;
+let uploader: ChunkUploader
 
-const fileInput = ref<HTMLInputElement | null>(null);
+const fileInput = ref<HTMLInputElement | null>(null)
 const fileInfo = ref({
-  name: "",
+  name: '',
   size: 0,
-});
+})
 const progressInfo = ref({
   hash: 0,
   chunk: 0,
-});
+})
 const timeInfo = ref({
-  hash: "0.00",
-  chunk: "0.00",
-  total: "0.00",
-});
-const status = ref<UploadStatus>("");
-const fileURL = ref("");
-const errorMessage = ref("");
-let uploadStartTime = 0;
-let chunkStartTime = 0;
+  hash: '0.00',
+  chunk: '0.00',
+  total: '0.00',
+})
+const status = ref<UploadStatus>('')
+const fileURL = ref('')
+const errorMessage = ref('')
+let uploadStartTime = 0
+let chunkStartTime = 0
 
 const isUploading = computed(() => {
-  return status.value === "hashing" || status.value === "chunking";
-});
+  return status.value === 'hashing' || status.value === 'chunking'
+})
 
 const uploadProgress = computed(() => {
-  if (status.value === "done") {
-    return 100;
+  if (status.value === 'done') {
+    return 100
   }
-  if (status.value === "hashing") {
-    return progressInfo.value.hash;
+  if (status.value === 'hashing') {
+    return progressInfo.value.hash
   }
-  if (status.value === "chunking") {
-    return progressInfo.value.chunk;
+  if (status.value === 'chunking') {
+    return progressInfo.value.chunk
   }
-  return 0;
-});
+  return 0
+})
 
 const statusMeta = computed(() => {
-  if (status.value === "done") {
+  if (status.value === 'done') {
     return {
-      label: "上传完成",
-      description: "文件已合并完成，可通过下方路径访问。",
-      icon: "check-circle",
-      tone: "success",
-    };
+      label: '上传完成',
+      description: '文件已合并完成，可通过下方路径访问。',
+      icon: 'check-circle',
+      tone: 'success',
+    }
   }
-  if (status.value === "error") {
+  if (status.value === 'error') {
     return {
-      label: "上传失败",
-      description: "请检查文件或网络状态后重新上传。",
-      icon: "error-circle",
-      tone: "error",
-    };
+      label: '上传失败',
+      description: '请检查文件或网络状态后重新上传。',
+      icon: 'error-circle',
+      tone: 'error',
+    }
   }
-  if (status.value === "hashing") {
+  if (status.value === 'hashing') {
     return {
-      label: "计算 hash",
+      label: '计算 hash',
       description: `正在生成文件指纹，进度 ${progressInfo.value.hash}%。`,
-      icon: "loading",
-      tone: "processing",
-    };
+      icon: 'loading',
+      tone: 'processing',
+    }
   }
-  if (status.value === "chunking") {
+  if (status.value === 'chunking') {
     return {
-      label: "分片上传",
+      label: '分片上传',
       description: `正在上传文件分片，进度 ${progressInfo.value.chunk}%。`,
-      icon: "loading",
-      tone: "processing",
-    };
+      icon: 'loading',
+      tone: 'processing',
+    }
   }
   return {
-    label: "等待文件",
-    description: "选择文件后会自动开始上传任务。",
-    icon: "info-circle",
-    tone: "neutral",
-  };
-});
+    label: '等待文件',
+    description: '选择文件后会自动开始上传任务。',
+    icon: 'info-circle',
+    tone: 'neutral',
+  }
+})
 
 const fileSizeText = computed(() => {
-  const size = fileInfo.value.size;
+  const size = fileInfo.value.size
   if (!size) {
-    return "";
+    return ''
   }
   if (size >= 1024 * 1024 * 1024) {
-    return `${(size / 1024 / 1024 / 1024).toFixed(2)}GB`;
+    return `${(size / 1024 / 1024 / 1024).toFixed(2)}GB`
   }
   if (size >= 1024 * 1024) {
-    return `${(size / 1024 / 1024).toFixed(2)}MB`;
+    return `${(size / 1024 / 1024).toFixed(2)}MB`
   }
-  return `${(size / 1024).toFixed(2)}KB`;
-});
+  return `${(size / 1024).toFixed(2)}KB`
+})
 
 function checkFile(file: File) {
   if (file.size > 10 * 1024 * 1024 * 1024) {
-    MessagePlugin.warning("上传文件不超过10G");
-    return false;
+    MessagePlugin.warning('上传文件不超过10G')
+    return false
   }
-  if (file.name.replace(/.+\./, "") !== "mp4") {
-    MessagePlugin.warning("上传文件仅支持MP4格式");
-    return false;
+  if (file.name.replace(/.+\./, '') !== 'mp4') {
+    MessagePlugin.warning('上传文件仅支持MP4格式')
+    return false
   }
-  return true;
+  return true
 }
 
 function formatDuration(startTime: number) {
   if (!startTime) {
-    return "0.00";
+    return '0.00'
   }
-  return ((performance.now() - startTime) / 1000).toFixed(2);
+  return ((performance.now() - startTime) / 1000).toFixed(2)
 }
 
 function reset() {
   progressInfo.value = {
     hash: 0,
     chunk: 0,
-  };
+  }
   timeInfo.value = {
-    hash: "0.00",
-    chunk: "0.00",
-    total: "0.00",
-  };
-  fileURL.value = "";
-  errorMessage.value = "";
-  uploadStartTime = 0;
-  chunkStartTime = 0;
+    hash: '0.00',
+    chunk: '0.00',
+    total: '0.00',
+  }
+  fileURL.value = ''
+  errorMessage.value = ''
+  uploadStartTime = 0
+  chunkStartTime = 0
 }
 
 function onChange(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0];
+  const file = (event.target as HTMLInputElement).files?.[0]
   if (fileInput.value) {
-    fileInput.value.value = "";
+    fileInput.value.value = ''
   }
   if (!file) {
-    return;
+    return
   }
   if (!checkFile(file)) {
-    return;
+    return
   }
-  reset();
+  reset()
   fileInfo.value = {
     name: file.name,
     size: file.size,
-  };
-  uploadStartTime = performance.now();
-  status.value = "hashing";
-  uploader.start(file);
+  }
+  uploadStartTime = performance.now()
+  status.value = 'hashing'
+  uploader.start(file)
 }
 
 onBeforeMount(() => {
   uploader = new ChunkUploader({
     onHashProgress: (percent) => {
-      progressInfo.value.hash = percent;
-      status.value = "hashing";
+      progressInfo.value.hash = percent
+      status.value = 'hashing'
     },
     onHashComplete: () => {
-      progressInfo.value.hash = 100;
-      timeInfo.value.hash = formatDuration(uploadStartTime);
+      progressInfo.value.hash = 100
+      timeInfo.value.hash = formatDuration(uploadStartTime)
     },
     onChunkStart: () => {
-      chunkStartTime = performance.now();
-      status.value = "chunking";
+      chunkStartTime = performance.now()
+      status.value = 'chunking'
     },
     onProgress: (percent) => {
-      progressInfo.value.chunk = percent;
-      status.value = "chunking";
+      progressInfo.value.chunk = percent
+      status.value = 'chunking'
     },
     onSuccess: (res) => {
       if (chunkStartTime) {
-        timeInfo.value.chunk = formatDuration(chunkStartTime);
+        timeInfo.value.chunk = formatDuration(chunkStartTime)
       }
-      timeInfo.value.total = formatDuration(uploadStartTime);
-      progressInfo.value.chunk = 100;
-      status.value = "done";
-      fileURL.value = res.url;
+      timeInfo.value.total = formatDuration(uploadStartTime)
+      progressInfo.value.chunk = 100
+      status.value = 'done'
+      fileURL.value = res.url
     },
     onError: (err) => {
       if (chunkStartTime) {
-        timeInfo.value.chunk = formatDuration(chunkStartTime);
+        timeInfo.value.chunk = formatDuration(chunkStartTime)
       }
-      timeInfo.value.total = formatDuration(uploadStartTime);
-      status.value = "error";
-      errorMessage.value = err instanceof Error ? err.message : "请稍后重试";
-      console.error("上传失败", err);
+      timeInfo.value.total = formatDuration(uploadStartTime)
+      status.value = 'error'
+      errorMessage.value = err instanceof Error ? err.message : '请稍后重试'
+      console.error('上传失败', err)
     },
-  });
-});
+  })
+})
 </script>
 
 <style scoped>

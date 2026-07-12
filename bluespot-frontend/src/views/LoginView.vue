@@ -1,6 +1,5 @@
 <template>
   <main class="login-page">
-
     <section class="login-panel" aria-label="登录">
       <div class="login-card">
         <div class="card-head">
@@ -63,7 +62,7 @@
             </div>
           </div>
 
-          <div class="flex justify-between items-center gap-3">
+          <div class="flex items-center justify-between gap-3">
             <label class="check flex items-center">
               <input v-model="remember" type="checkbox" />
               <span>保持登录</span>
@@ -72,7 +71,7 @@
           </div>
 
           <button class="primary" type="submit" :disabled="submitting">
-            <span>{{ submitting ? "正在验证" : "登录" }}</span>
+            <span>{{ submitting ? '正在验证' : '登录' }}</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 12h14m-6-6 6 6-6 6"
@@ -92,69 +91,69 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { login } from "@/api/global";
-import { useUserStore } from "@/stores/user";
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { login } from '@/api/global'
+import { useUserStore } from '@/stores/user'
 
 defineOptions({
-  name: "LoginView",
-});
+  name: 'LoginView',
+})
 
-const router = useRouter();
-const userStore = useUserStore();
-const account = ref("");
-const password = ref("");
-const remember = ref(true);
-const showPassword = ref(false);
-const submitting = ref(false);
-const notice = ref("");
-const noticeType = ref("");
+const router = useRouter()
+const userStore = useUserStore()
+const account = ref('')
+const password = ref('')
+const remember = ref(true)
+const showPassword = ref(false)
+const submitting = ref(false)
+const notice = ref('')
+const noticeType = ref('')
 
 function reset() {
-  account.value = "";
-  password.value = "";
-  noticeType.value = "";
-  notice.value = "";
+  account.value = ''
+  password.value = ''
+  noticeType.value = ''
+  notice.value = ''
 }
 
 async function submit() {
-  if (submitting.value) return;
+  if (submitting.value) return
 
-  const username = account.value.trim();
+  const username = account.value.trim()
   if (!username || !password.value) {
-    noticeType.value = "error";
-    notice.value = "请输入账号和密码";
-    return;
+    noticeType.value = 'error'
+    notice.value = '请输入账号和密码'
+    return
   }
 
-  submitting.value = true;
-  noticeType.value = "";
-  notice.value = "正在验证...";
+  submitting.value = true
+  noticeType.value = ''
+  notice.value = '正在验证...'
 
   try {
     const tokens = await login({
       username,
       password: password.value,
-    });
-    userStore.setTokens(tokens);
+    })
+    userStore.setTokens(tokens)
     void userStore.fetchUserInfo(true).catch((error) => {
-      console.warn("Failed to load user info after login.", error);
-    });
+      console.warn('Failed to load user info after login.', error)
+    })
     if (remember.value) {
-      localStorage.setItem("albumSession", "remote");
+      localStorage.setItem('albumSession', 'remote')
     } else {
-      localStorage.removeItem("albumSession");
+      localStorage.removeItem('albumSession')
     }
-    noticeType.value = "success";
-    notice.value = "验证通过，正在进入";
-    await router.push("/");
+    noticeType.value = 'success'
+    notice.value = '验证通过，正在进入'
+    await router.push('/')
   } catch (error) {
-    console.warn("Failed to login.", error);
-    noticeType.value = "error";
-    notice.value = "账号或密码不正确";
+    console.warn('Failed to login.', error)
+    noticeType.value = 'error'
+    notice.value = '账号或密码不正确'
   } finally {
-    submitting.value = false;
+    submitting.value = false
   }
 }
 </script>
@@ -183,7 +182,7 @@ async function submit() {
     linear-gradient(rgba(16, 16, 19, 0.035) 1px, transparent 1px) 0 0 / 44px 44px,
     var(--bg);
   font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
 button,
