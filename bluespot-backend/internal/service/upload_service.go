@@ -160,8 +160,11 @@ func (s *UploadService) scheduleFinalFileDeletion(finalFileName string) {
 		return
 	}
 	s.scheduleDelete(s.deleteFinalFileDelay, func() {
-		if err := s.repo.DeleteFinalFile(finalFileName); err != nil {
+		err := s.repo.DeleteFinalFile(finalFileName)
+		if err != nil {
 			zap.L().Error("delete merged upload file failed", zap.String("file_name", finalFileName), zap.Error(err))
+		} else {
+			zap.L().Info("deleted merged upload file successfully", zap.String("file_name", finalFileName))
 		}
 	})
 }
