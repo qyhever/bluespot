@@ -29,6 +29,11 @@ const basicRoutes = [
     name: 'chunk-upload',
     component: () => import('../views/attach/ChunkUploadView.vue'),
   },
+  {
+    path: '/mail/send',
+    name: 'mail-send',
+    component: () => import('../views/mail/SendMail.vue'),
+  },
 ]
 
 const router = createRouter({

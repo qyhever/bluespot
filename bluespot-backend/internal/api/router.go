@@ -58,7 +58,6 @@ func SetupRouter() *gin.Engine {
 	v1 := r.Group("/api")
 
 	v1.GET("/meta", metaController.GetMeta)
-	v1.POST("/mail", mailController.Send)
 
 	appGroup := v1.Group("/app")
 	{
@@ -82,6 +81,10 @@ func SetupRouter() *gin.Engine {
 	uploadGroup.POST("/verify", uploadController.Verify)
 	uploadGroup.POST("/chunk", uploadController.UploadChunk)
 	uploadGroup.POST("/merge", uploadController.Merge)
+
+	mailGroup := v1.Group("/mail")
+	mailGroup.Use(middleware.JWTAuthMiddleware())
+	mailGroup.POST("", mailController.Send)
 
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{
