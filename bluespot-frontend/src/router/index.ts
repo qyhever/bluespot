@@ -34,6 +34,11 @@ const basicRoutes = [
     name: 'mail-send',
     component: () => import('../views/mail/SendMail.vue'),
   },
+  {
+    path: '/notification/tg',
+    name: 'telegram-send',
+    component: () => import('../views/telegram/SendTelegram.vue'),
+  },
 ]
 
 const router = createRouter({

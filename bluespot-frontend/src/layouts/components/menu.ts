@@ -64,6 +64,18 @@ export const menuList: IMenuItem[] = [
     ],
   },
   {
+    title: '通知',
+    path: '/notification',
+    icon: 'smile',
+    children: [
+      {
+        title: '发送 Telegram 消息',
+        path: '/notification/tg',
+        icon: 'smile',
+      },
+    ],
+  },
+  {
     title: '图表',
     path: '/chart',
     icon: 'smile',
