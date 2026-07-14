@@ -48,3 +48,7 @@ attach:
   upload_large_file_path: "./public/larges" # 大文件存放目录
   chunk_dir_path: "./public/chunks" # 分片文件存放目录
   chunk_dir_salt: "bluespot_chunk_upload_salt"
+
+tg:
+  bot_token: "" # TG机器人Token
+  chat_id: ""   # TG聊天ID

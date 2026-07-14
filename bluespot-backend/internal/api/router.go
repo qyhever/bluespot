@@ -9,6 +9,7 @@ import (
 	"bluespot/internal/config"
 	"bluespot/internal/controller"
 	"bluespot/internal/middleware"
+	"bluespot/internal/pkg/telegram"
 	"bluespot/internal/repository/persistence"
 	"bluespot/internal/service"
 
@@ -54,6 +55,13 @@ func SetupRouter() *gin.Engine {
 	uploadController := controller.NewUploadController(uploadService)
 	mailService := service.NewMailService()
 	mailController := controller.NewMailController(mailService)
+	telegramConfig := config.TelegramConfig{}
+	if cfg := config.GetConfig(); cfg != nil {
+		telegramConfig = cfg.TG
+	}
+	telegramClient := telegram.NewClient(telegramConfig.BotToken, telegramConfig.ChatID)
+	telegramService := service.NewTelegramService(telegramClient)
+	telegramController := controller.NewTelegramController(telegramService)
 
 	v1 := r.Group("/api")
 
@@ -85,6 +93,10 @@ func SetupRouter() *gin.Engine {
 	mailGroup := v1.Group("/mail")
 	mailGroup.Use(middleware.JWTAuthMiddleware())
 	mailGroup.POST("", mailController.Send)
+
+	telegramGroup := v1.Group("/telegram")
+	telegramGroup.Use(middleware.JWTAuthMiddleware())
+	telegramGroup.POST("", telegramController.Send)
 
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{

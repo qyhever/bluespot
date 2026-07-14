@@ -22,6 +22,7 @@ type Config struct {
 	Auth              AuthConfig     `mapstructure:"auth"`
 	Postal            PostalConfig   `mapstructure:"postal"`
 	Attach            AttachConfig   `mapstructure:"attach"`
+	TG                TelegramConfig `mapstructure:"tg"`
 }
 
 // ServerConfig 服务器配置
@@ -81,6 +82,12 @@ type AttachConfig struct {
 	UploadLargeFilePath  string `mapstructure:"upload_large_file_path"`
 	ChunkDirPath         string `mapstructure:"chunk_dir_path"`
 	ChunkDirSalt         string `mapstructure:"chunk_dir_salt"`
+}
+
+// TelegramConfig Telegram 机器人配置。
+type TelegramConfig struct {
+	BotToken string `mapstructure:"bot_token"`
+	ChatID   string `mapstructure:"chat_id"`
 }
 
 type ThirdPartyConfig struct {
@@ -197,6 +204,9 @@ func bindEnvVars(loader *viper.Viper) {
 	loader.BindEnv("auth.default_user.username", "BLUESPOT_AUTH_DEFAULT_USER_USERNAME")
 	loader.BindEnv("auth.default_user.password", "BLUESPOT_AUTH_DEFAULT_USER_PASSWORD")
 	loader.BindEnv("auth.default_user.nickname", "BLUESPOT_AUTH_DEFAULT_USER_NICKNAME")
+
+	loader.BindEnv("tg.bot_token", "BLUESPOT_TG_BOT_TOKEN")
+	loader.BindEnv("tg.chat_id", "BLUESPOT_TG_CHAT_ID")
 
 }
 

@@ -161,6 +161,13 @@ definitions:
     - subject
     - to
     type: object
+  model.SendTelegramMessageRequest:
+    properties:
+      text:
+        type: string
+    required:
+    - text
+    type: object
   model.UserInfoResponse:
     properties:
       nickname:
@@ -312,6 +319,30 @@ paths:
       summary: 获取部署元信息
       tags:
       - meta
+  /telegram:
+    post:
+      consumes:
+      - application/json
+      description: 使用服务端配置的 Bot Token 和 Chat ID 发送文本消息。
+      parameters:
+      - description: Telegram 消息参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.SendTelegramMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.ResponseData'
+      security:
+      - BearerAuth: []
+      summary: 发送 Telegram 消息
+      tags:
+      - telegram
   /user/info:
     get:
       consumes:
