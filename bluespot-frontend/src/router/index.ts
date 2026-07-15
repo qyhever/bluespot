@@ -23,21 +23,33 @@ const basicRoutes = [
     path: '/attach/simple-upload',
     name: 'simple-upload',
     component: () => import('../views/attach/SimpleUploadView.vue'),
+    meta: {
+      title: '常规上传',
+    }
   },
   {
     path: '/attach/chunk-upload',
     name: 'chunk-upload',
     component: () => import('../views/attach/ChunkUploadView.vue'),
+    meta: {
+      title: '分片上传',
+    }
   },
   {
     path: '/mail/send',
     name: 'mail-send',
     component: () => import('../views/mail/SendMail.vue'),
+    meta: {
+      title: '发送邮件',
+    }
   },
   {
     path: '/notification/tg',
     name: 'telegram-send',
     component: () => import('../views/telegram/SendTelegram.vue'),
+    meta: {
+      title: '发送Telegram消息',
+    },
   },
 ]
 

@@ -45,7 +45,7 @@
           </div>
         </div>
       </div>
-      <!-- <NavTab></NavTab> -->
+      <NavTab></NavTab>
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component
@@ -68,7 +68,7 @@ import MenuItem from './components/MenuItem.vue'
 import { menuList } from './components/menu'
 import { useUserStore } from '@/stores/user'
 import { getActive } from '@/router'
-// import NavTab from './components/NavTab.vue'
+import NavTab from './components/NavTab.vue'
 
 const route = useRoute()
 const router = useRouter()
