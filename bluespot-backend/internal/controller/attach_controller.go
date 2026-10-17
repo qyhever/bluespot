@@ -49,3 +49,36 @@ func (ac *AttachController) Upload(c *gin.Context) {
 
 	ResponseSuccess(c, result)
 }
+
+// UploadConfigFile godoc
+// @Summary 上传配置文件
+// @Description 仅校验上传密钥，无需 JWT；保留原始文件名，同名文件覆盖。
+// @Tags attach
+// @Accept multipart/form-data
+// @Produce json
+// @Param file formData file true "配置文件"
+// @Param secret formData string true "配置文件上传密钥"
+// @Success 200 {object} SwaggerAttachUploadResponse
+// @Failure 200 {object} SwaggerErrorResponse
+// @Router /attach/uploadConfigFile [post]
+func (ac *AttachController) UploadConfigFile(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		ResponseFailed(c, CodeInvalidParam)
+		return
+	}
+	result, err := ac.attachService.UploadConfigFile(file, c.PostForm("secret"))
+	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrInvalidConfigFileSecret):
+			ResponseFailedWithMsg(c, CodeInvalidParam, "上传密钥错误")
+		case errors.Is(err, service.ErrInvalidAttachFile):
+			ResponseFailed(c, CodeInvalidParam)
+		default:
+			zap.L().Error("upload config file failed", zap.Error(err))
+			ResponseFailed(c, CodeServerBusy)
+		}
+		return
+	}
+	ResponseSuccess(c, result)
+}

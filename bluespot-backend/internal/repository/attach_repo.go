@@ -4,4 +4,5 @@ import "mime/multipart"
 
 type AttachRepository interface {
 	Save(file *multipart.FileHeader, fileName string) error
+	SaveConfigFile(file *multipart.FileHeader, fileName string) error
 }

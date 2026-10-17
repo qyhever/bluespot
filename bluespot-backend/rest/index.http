@@ -54,3 +54,18 @@ Content-Type: application/json
 {
   "text": "hello from bluespot"
 }
+
+### AttachUploadConfigFile（无需 JWT，secret 与部署配置一致）
+post http://{{host}}/api/attach/uploadConfigFile HTTP/1.1
+Content-Type: multipart/form-data; boundary=----BluespotConfigBoundary
+
+------BluespotConfigBoundary
+Content-Disposition: form-data; name="secret"
+
+bluespot_upload_config
+------BluespotConfigBoundary
+Content-Disposition: form-data; name="file"; filename="example.json"
+Content-Type: application/json
+
+{"enabled": true}
+------BluespotConfigBoundary--

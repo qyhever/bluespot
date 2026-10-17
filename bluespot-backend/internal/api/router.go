@@ -81,6 +81,7 @@ func SetupRouter() *gin.Engine {
 	userGroup.GET("/info", userController.GetCurrentUserInfo)
 
 	attachGroup := v1.Group("/attach")
+	attachGroup.POST("/uploadConfigFile", attachController.UploadConfigFile)
 	attachGroup.Use(middleware.JWTAuthMiddleware())
 	attachGroup.POST("/upload", attachController.Upload)
 

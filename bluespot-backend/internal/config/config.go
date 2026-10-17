@@ -76,12 +76,15 @@ type PostalConfig struct {
 }
 
 type AttachConfig struct {
-	ViewAttachBaseURL    string `mapstructure:"view_attach_base_url"`
-	UploadDirPath        string `mapstructure:"upload_dir_path"`
-	ViewLargeFileBaseURL string `mapstructure:"view_large_file_base_url"`
-	UploadLargeFilePath  string `mapstructure:"upload_large_file_path"`
-	ChunkDirPath         string `mapstructure:"chunk_dir_path"`
-	ChunkDirSalt         string `mapstructure:"chunk_dir_salt"`
+	UploadConfigFileDirPath string `mapstructure:"upload_config_file_dir_path"`
+	ViewConfigFileBaseURL   string `mapstructure:"view_config_file_base_url"`
+	UploadConfigFileSecret  string `mapstructure:"upload_config_file_secret"`
+	ViewAttachBaseURL       string `mapstructure:"view_attach_base_url"`
+	UploadDirPath           string `mapstructure:"upload_dir_path"`
+	ViewLargeFileBaseURL    string `mapstructure:"view_large_file_base_url"`
+	UploadLargeFilePath     string `mapstructure:"upload_large_file_path"`
+	ChunkDirPath            string `mapstructure:"chunk_dir_path"`
+	ChunkDirSalt            string `mapstructure:"chunk_dir_salt"`
 }
 
 // TelegramConfig Telegram 机器人配置。
@@ -182,6 +185,9 @@ func bindEnvVars(loader *viper.Viper) {
 	loader.BindEnv("attach.upload_large_file_path", "BLUESPOT_ATTACH_UPLOAD_LARGE_FILE_PATH")
 	loader.BindEnv("attach.chunk_dir_path", "BLUESPOT_ATTACH_CHUNK_DIR_PATH")
 	loader.BindEnv("attach.chunk_dir_salt", "BLUESPOT_ATTACH_CHUNK_DIR_SALT")
+	loader.BindEnv("attach.upload_config_file_dir_path", "BLUESPOT_ATTACH_UPLOAD_CONFIG_FILE_DIR_PATH")
+	loader.BindEnv("attach.view_config_file_base_url", "BLUESPOT_ATTACH_VIEW_CONFIG_FILE_BASE_URL")
+	loader.BindEnv("attach.upload_config_file_secret", "BLUESPOT_ATTACH_UPLOAD_CONFIG_FILE_SECRET")
 
 	loader.BindEnv("server.port", "BLUESPOT_SERVER_PORT")
 
@@ -347,4 +353,28 @@ func IsDevelopment() bool {
 // IsTest 判断是否为测试环境
 func IsTest() bool {
 	return GetEnv() == "test"
+}
+
+// GetAttachConfigFileUploadDirPath 获取配置文件上传目录。
+func GetAttachConfigFileUploadDirPath() string {
+	if GlobalConfig == nil {
+		return ""
+	}
+	return GlobalConfig.Attach.UploadConfigFileDirPath
+}
+
+// GetAttachConfigFileViewBaseURL 获取配置文件访问地址前缀。
+func GetAttachConfigFileViewBaseURL() string {
+	if GlobalConfig == nil {
+		return ""
+	}
+	return GlobalConfig.Attach.ViewConfigFileBaseURL
+}
+
+// GetAttachConfigFileUploadSecret 获取配置文件上传密钥，保留原始值以供精确匹配。
+func GetAttachConfigFileUploadSecret() string {
+	if GlobalConfig == nil {
+		return ""
+	}
+	return GlobalConfig.Attach.UploadConfigFileSecret
 }

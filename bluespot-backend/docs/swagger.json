@@ -80,6 +80,45 @@
                 }
             }
         },
+        "/attach/uploadConfigFile": {
+            "post": {
+                "description": "仅校验上传密钥，无需 JWT；保留原始文件名，同名文件覆盖。",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "attach"
+                ],
+                "summary": "上传配置文件",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "配置文件",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "配置文件上传密钥",
+                        "name": "secret",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.SwaggerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "使用管理员用户名和密码换取 accessToken 与 refreshToken。业务失败同样返回 HTTP 200，通过 code/message 区分。",
@@ -381,6 +420,20 @@
                 "message": {
                     "type": "string",
                     "example": "success"
+                }
+            }
+        },
+        "controller.SwaggerErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 1001
+                },
+                "data": {},
+                "message": {
+                    "type": "string",
+                    "example": "请求参数错误"
                 }
             }
         },

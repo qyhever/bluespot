@@ -17,6 +17,7 @@ import (
 )
 
 var ErrInvalidAttachFile = errors.New("invalid attach file")
+var ErrInvalidConfigFileSecret = errors.New("invalid config file upload secret")
 
 type AttachService struct {
 	repo repository.AttachRepository
@@ -66,4 +67,35 @@ func buildAttachURL(fileName string) string {
 		return url.PathEscape(fileName)
 	}
 	return baseURL + "/" + url.PathEscape(fileName)
+}
+
+// UploadConfigFile 校验上传密钥后按原始文件名覆盖配置文件。
+func (s *AttachService) UploadConfigFile(file *multipart.FileHeader, secret string) (*model.AttachUploadResponse, error) {
+	configuredSecret := config.GetAttachConfigFileUploadSecret()
+	if configuredSecret == "" || secret == "" || secret != configuredSecret {
+		return nil, ErrInvalidConfigFileSecret
+	}
+	if file == nil {
+		return nil, ErrInvalidAttachFile
+	}
+
+	// 同时处理 Unix 和 Windows 路径，文件始终保存在配置目录内。
+	fileName := filepath.Base(strings.ReplaceAll(file.Filename, "\\", "/"))
+	if strings.TrimSpace(fileName) == "" || fileName == "." || fileName == ".." || strings.ContainsAny(fileName, "/\x00") {
+		return nil, ErrInvalidAttachFile
+	}
+	if err := s.repo.SaveConfigFile(file, fileName); err != nil {
+		return nil, err
+	}
+
+	baseURL := strings.TrimRight(strings.TrimSpace(config.GetAttachConfigFileViewBaseURL()), "/")
+	fileURL := url.PathEscape(fileName)
+	if baseURL != "" {
+		fileURL = baseURL + "/" + fileURL
+	}
+	return &model.AttachUploadResponse{
+		FileName:   fileName,
+		OriginName: fileName,
+		URL:        fileURL,
+	}, nil
 }

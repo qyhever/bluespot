@@ -81,6 +81,16 @@ definitions:
         example: success
         type: string
     type: object
+  controller.SwaggerErrorResponse:
+    properties:
+      code:
+        example: 1001
+        type: integer
+      data: {}
+      message:
+        example: 请求参数错误
+        type: string
+    type: object
   controller.SwaggerHelloInfoResponse:
     properties:
       code:
@@ -227,6 +237,32 @@ paths:
       security:
       - BearerAuth: []
       summary: 上传附件
+      tags:
+      - attach
+  /attach/uploadConfigFile:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 仅校验上传密钥，无需 JWT；保留原始文件名，同名文件覆盖。
+      parameters:
+      - description: 配置文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 配置文件上传密钥
+        in: formData
+        name: secret
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SwaggerErrorResponse'
+      summary: 上传配置文件
       tags:
       - attach
   /auth/login:
