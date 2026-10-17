@@ -1,0 +1,15 @@
+@hostname = localhost
+@port = 6306
+@host = {{hostname}}:{{port}}
+@token= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg1MDY0MjczLCJpc3MiOiJqZXZlIn0.tSyB9_1MHnIHCp8KhG5WBbsAvehDsetts6Tx7leB2Sk
+
+### send mail
+post http://{{host}}/api/mail HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "to": "arlong@qyhever.cn",
+  "subject": "Neocrown",
+  "body": "光轮冰棍发起旋毛自来也双式之丸"
+}
